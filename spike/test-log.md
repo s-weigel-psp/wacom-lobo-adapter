@@ -28,30 +28,43 @@ C:\Program Files\Tablet\Wacom\PrefUtil.exe
 >
 ```
 
-opens a small window but no shell output.
+Opens a small window but no shell output.
 ![window screenshot](./tablet-service-program-screenshot.png)
 
-**Import flag syntax confirmed:** /import
-**Export flag syntax confirmed:** /export
+Adding `/silent` disables the dialog but still gives no output to the command line.
+
+**Import flag syntax confirmed:** /import - opens the same dialog as with --help
+/silent is not implemented on /import
+
+**Export flag syntax confirmed:** /export - opens an export dialog different from the above (alson no /silent here)
+
+[*Flag syntax specification*](https://developer-support.wacom.com/hc/en-us/articles/9354481821463-Run-the-Preferences-utility-from-the-command-line)
 
 ## 2. XML Mapping Element Discovery
 
 **Diff result between baseline-A (full screen) and baseline-B (partial screen):**
 
-Changed element name: `[element name, e.g. ScreenMapping]`
+Changed element name: `InputScreenAreaArray/ArrayElement`
 
 Changed attributes (fill in actual names and values):
 
-| Attribute | Baseline-A value (full screen) | Baseline-B value (partial) |
-|-----------|--------------------------------|----------------------------|
-| [attr1]   | [value]                        | [value]                    |
-| [attr2]   | [value]                        | [value]                    |
-| [attr3]   | [value]                        | [value]                    |
-| [attr4]   | [value]                        | [value]                    |
+Base XML path: `InputScreenAreaArray/ArrayElement`
+
+| Attribute                              | Baseline-A value (full screen) | Baseline-B value (right half) |
+|----------------------------------------|--------------------------------|-------------------------------|
+| `InputArea/OverlapArea/Extent/X`       | `21600`                        | `45078`                       |
+| `InputArea/OverlapArea/Origin/X`       | `0`                            | `-23478`                      |
+| `ScreenArea/AreaType`                  | `0`                            | `1`                           |
+| `ScreenArea/MouseHeight`               | `5`                            | `1`                           |
+| `ScreenArea/MouseSpeed`                | `5`                            | `1`                           |
+| `ScreenArea/ScreenOutputArea/Extent/X` | `3840`                         | `1840`                        |
+| `ScreenArea/ScreenOutputArea/Origin/X` | `0`                            | `2000`                        |
+
+These values are located under each `ArrayElement` in the `InputScreenAreaArray` block. The main difference is that the right-half mapping shifts the overlap origin and output origin to the right, and also switches the screen area from `AreaType=0` to `AreaType=1` while reducing mouse height/speed.
 
 **Coordinate semantics:** [Left/Top/Right/Bottom] OR [X/Y/Width/Height] — determined from attribute names above
 
-**XML namespace on root element:** [yes — xmlns="..."] / [no namespace]
+**XML namespace on root element:** no namespace
 
 **XPath expression to use in Set-WacomMapping.ps1:**
 
