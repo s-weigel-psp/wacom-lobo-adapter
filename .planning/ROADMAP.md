@@ -1,0 +1,94 @@
+# Roadmap: Wacom Lobo Adapter
+
+## Overview
+
+Four phases take the project from feasibility validation to production domain rollout. Phase 1 is a high-risk spike that must succeed before any other phase begins. Phases 2 and 3 can run in parallel once Phase 1 confirms the approach is viable. Phase 4 deploys the completed system to the domain.
+
+## Phases
+
+- [ ] **Phase 1: Wacom Mapping Spike** - Verify that Wacom tablet mapping can be programmatically set at runtime via PowerShell + `Wacom_TabletUserPrefs.exe`
+- [ ] **Phase 2: Native Messaging Host** - Build the production C# .NET 8 Windows helper that receives mapping commands and drives the Wacom driver
+- [ ] **Phase 3: Browser Extension** - Build the Chrome/Edge MV3 extension that tracks the DOM element and sends coordinates to the native host
+- [ ] **Phase 4: Domain Deployment** - Package and deploy the full system to all domain machines via GPO/Intune
+
+## Phase Details
+
+### Phase 1: Wacom Mapping Spike
+**Goal**: Prove that `Wacom_TabletUserPrefs.exe` can be scripted to restrict the Wacom stylus to an arbitrary screen region, measure latency, and produce a documented recommendation for Phase 2.
+**Depends on**: Nothing (first phase — but requires physical Wacom One M + Windows test machine)
+**Requirements**: SPIKE-01, SPIKE-02, SPIKE-03, SPIKE-04, SPIKE-05
+**Risk**: HIGH — if this phase fails, the overall architecture must be reconsidered
+**Success Criteria** (what must be TRUE):
+  1. `Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080` restricts stylus to left half of screen
+  2. Three consecutive mapping changes complete within 3 seconds each
+  3. `Reset-WacomMapping.ps1` restores full-screen stylus movement
+  4. `spike/SPIKE-RESULTS.md` documents: working method, binary path, XML tag names, measured latency, admin-rights requirement, and a clear recommendation (keep PowerShell or port to C#)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01: Prepare test environment — install Wacom One M driver, connect tablet, export baseline XML profile, identify preference file paths and XML mapping tags, document service names
+- [ ] 01-02: Write `Set-WacomMapping.ps1` (params: X, Y, Width, Height) and `Reset-WacomMapping.ps1` (re-import baseline); include logging via `Write-Host`
+- [ ] 01-03: Execute all 6 manual tests (left half, right half, centre region, 3× consecutive change with latency measurement, reset, optional multi-monitor), fill `SPIKE-RESULTS.md` and `test-log.md`
+
+### Phase 2: Native Messaging Host
+**Goal**: Production-ready Windows executable that receives Native Messaging commands from a browser extension and drives the Wacom driver; delivered as a silent MSI installer.
+**Depends on**: Phase 1 (Wacom XML manipulation approach validated)
+**Requirements**: HOST-01, HOST-02, HOST-03, HOST-04, HOST-05, HOST-06
+**Note**: Can run in parallel with Phase 3 — interface contract is the JSON protocol defined in `docs/protocol.md`
+**Success Criteria** (what must be TRUE):
+  1. `chrome.runtime.sendNativeMessage('com.eurefirma.wacombridge', {command:'set_mapping', x:0, y:0, width:960, height:1080})` applies Wacom mapping visibly
+  2. `reset_mapping` command restores full-screen stylus movement
+  3. `get_status` returns JSON with current mapping state; `ping` returns `{ok: true}`
+  4. MSI installs silently (`msiexec /i WacomBridge.msi /quiet`) and appears in Chrome and Edge native messaging registry
+  5. Log entries appear in `%LOCALAPPDATA%\WacomBridge\logs\` after each command
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01: Scaffold C# .NET 8 console app — implement Native Messaging stdin/stdout protocol (4-byte length prefix + JSON), command dispatcher, and basic logging to `%LOCALAPPDATA%\WacomBridge\logs\`
+- [ ] 02-02: Port Wacom XML manipulation from PowerShell spike — implement `set_mapping`, `reset_mapping`, preference file read/write, `Wacom_TabletUserPrefs.exe` invocation; handle admin-rights scenario from spike findings
+- [ ] 02-03: Create WiX 4 installer — single-file .exe bundled, Chrome + Edge registry manifest entries (`HKLM\SOFTWARE\Google\Chrome\NativeMessagingHosts\com.eurefirma.wacombridge` and Edge equivalent), silent install/uninstall support
+
+### Phase 3: Browser Extension
+**Goal**: Chrome/Edge Manifest V3 extension that detects the target DOM element, computes its screen coordinates (DPR-corrected), drives the native host, and shows a banner when the area changes.
+**Depends on**: Phase 1 (approach validated) — can run in parallel with Phase 2
+**Requirements**: EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, EXT-06
+**Success Criteria** (what must be TRUE):
+  1. Opening the target application URL causes the extension to locate the DOM element and show a "Wacom synced" status without user action
+  2. Moving or resizing the browser window changes the banner status to "PDF area changed — re-calibrate"
+  3. Clicking the re-calibrate button sends updated coordinates to the native host and restricts the stylus to the new area
+  4. On a 150% DPI-scaled Windows display, the stylus maps to the correct visual area (not a scaled offset)
+  5. If the native host is not installed, the banner shows a clear "Native host not found" error message
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01: Scaffold Manifest V3 extension — `manifest.json` with `nativeMessaging` permission and URL allowlist, background service worker with `chrome.runtime.connectNative`, message routing between content script and service worker
+- [ ] 03-02: Implement content script — `document.getElementById(TARGET_ID)` polling, `getBoundingClientRect()` + `window.screenX/Y` coordinate calculation, DPR correction via `window.devicePixelRatio`, fallback for `window.getScreenDetails()` unavailability
+- [ ] 03-03: Implement banner UI (Shadow DOM) — initial "synced" state, staleness detection via `ResizeObserver` + `resize` event + `screenX/Y` polling, re-calibrate button handler, error state for missing native host
+
+### Phase 4: Domain Deployment
+**Goal**: The full system (extension + native host) is deployed to all domain machines without per-user action, validated with a pilot group before broad rollout.
+**Depends on**: Phase 2 and Phase 3
+**Requirements**: DEPLOY-01, DEPLOY-02, DEPLOY-03, DEPLOY-04, DEPLOY-05
+**Success Criteria** (what must be TRUE):
+  1. Extension appears in Chrome and Edge on a fresh domain machine without any user installation action
+  2. Opening the target application URL on a managed machine activates Wacom mapping without browser permission prompts
+  3. Native host MSI deploys silently to the pilot group via Intune (or GPO Software Installation) and is confirmed installed
+  4. End-to-end flow works on 2 pilot machines: open PDF → stylus confined to PDF area → move window → banner appears → re-calibrate → stylus confined to new area
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01: Create GPO ADMX/JSON policy templates — `ExtensionInstallForcelist` for Chrome and Edge, `ExtensionSettings` URL allowlist, `WindowManagementAllowedForUrls` for Window Management permission auto-grant
+- [ ] 04-02: Package native host MSI for Intune/GPO deployment — create Intune Win32 app package or GPO software installation share, test silent install on clean VM
+- [ ] 04-03: Pilot test on 2 domain machines — validate end-to-end flow, document any issues, create rollout plan for remaining machines
+
+## Progress
+
+**Execution Order:**
+Phase 1 → Phase 2 (parallel with Phase 3) → Phase 4
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Wacom Mapping Spike | 0/3 | Not started | - |
+| 2. Native Messaging Host | 0/3 | Not started | - |
+| 3. Browser Extension | 0/3 | Not started | - |
+| 4. Domain Deployment | 0/3 | Not started | - |
