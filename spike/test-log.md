@@ -8,22 +8,31 @@
 ## 1. PrefUtil Binary
 
 **Searched paths:**
-- [ ] C:\Program Files\Tablet\Wacom\PrefUtil.exe — exists: [yes/no]
-- [ ] C:\Program Files\Tablet\Wacom\Wacom_TabletUserPrefs.exe — exists: [yes/no]
-- [ ] C:\Program Files (x86)\Tablet\Wacom\PrefUtil.exe — exists: [yes/no]
+
+- [x] C:\Program Files\Tablet\Wacom\PrefUtil.exe — exists: yes
+- [x] C:\Program Files\Tablet\Wacom\Wacom_TabletUserPrefs.exe — exists: no
+- [x] C:\Program Files (x86)\Tablet\Wacom\PrefUtil.exe — exists: no
 
 **Actual path used:**
-```
-[paste full path here]
+
+```path
+C:\Program Files\Tablet\Wacom\PrefUtil.exe
 ```
 
 **Help output:**
-```
-[paste PrefUtil /? or --help output here]
+
+```sh
+> $PREFUTIL_PATH = 'C:\Program Files\Tablet\Wacom\PrefUtil.exe'
+> & $PREFUTIL_PATH /?
+> & $PREFUTIL_PATH --help
+>
 ```
 
-**Import flag syntax confirmed:** [--import / /import / other]
-**Export flag syntax confirmed:** [--export / /export / other]
+opens a small window but no shell output.
+![window screenshot](./tablet-service-program-screenshot.png)
+
+**Import flag syntax confirmed:** /import
+**Export flag syntax confirmed:** /export
 
 ## 2. XML Mapping Element Discovery
 
@@ -34,18 +43,19 @@ Changed element name: `[element name, e.g. ScreenMapping]`
 Changed attributes (fill in actual names and values):
 
 | Attribute | Baseline-A value (full screen) | Baseline-B value (partial) |
-|-----------|-------------------------------|---------------------------|
-| [attr1]   | [value]                       | [value]                   |
-| [attr2]   | [value]                       | [value]                   |
-| [attr3]   | [value]                       | [value]                   |
-| [attr4]   | [value]                       | [value]                   |
+|-----------|--------------------------------|----------------------------|
+| [attr1]   | [value]                        | [value]                    |
+| [attr2]   | [value]                        | [value]                    |
+| [attr3]   | [value]                        | [value]                    |
+| [attr4]   | [value]                        | [value]                    |
 
 **Coordinate semantics:** [Left/Top/Right/Bottom] OR [X/Y/Width/Height] — determined from attribute names above
 
 **XML namespace on root element:** [yes — xmlns="..."] / [no namespace]
 
 **XPath expression to use in Set-WacomMapping.ps1:**
-```
+
+```txt
 [e.g., //ScreenMapping  OR  //wacom:ScreenMapping with namespace hashtable]
 ```
 
@@ -53,17 +63,19 @@ Changed attributes (fill in actual names and values):
 
 ## 3. Wacom Service Names
 
-```
+```txt
 [paste Get-Service *wacom* output here]
 [paste Get-Service *tablet* output here]
 ```
 
 **Service(s) confirmed running:**
+
 - [service name] — [DisplayName] — Status: [Running/Stopped]
 
 ## 4. Admin Rights Test
 
 **Export from non-elevated prompt:**
+
 - Exit code: [0 / other]
 - File created: [yes/no]
 - Result: [elevation required / not required]
