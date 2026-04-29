@@ -1,0 +1,4 @@
+# Wacom spike — per-machine baseline (machine-specific, never commit)
+spike/baseline-local.xml
+# Wacom spike — temporary modified XML used during diff (not needed after discovery)
+spike/baseline-modified.xml
