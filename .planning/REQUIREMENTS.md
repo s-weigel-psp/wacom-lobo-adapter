@@ -11,7 +11,8 @@
 - [ ] **SPIKE-02**: Mapping change completes in under 3 seconds (measured across consecutive changes)
 - [ ] **SPIKE-03**: Wacom stylus respects the new mapping region after a change (stays within mapped area)
 - [ ] **SPIKE-04**: Reset script restores full-screen mapping from baseline profile
-- [ ] **SPIKE-05**: SPIKE-RESULTS.md documents working method, binary paths, XML structure, service names, measured latency, and recommendation for Phase 2
+- [x] **SPIKE-05
+**: SPIKE-RESULTS.md documents working method, binary paths, XML structure, service names, measured latency, and recommendation for Phase 2
 
 ### Native Host (Phase 2)
 
