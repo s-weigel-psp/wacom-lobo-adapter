@@ -9,10 +9,10 @@
     baseline exported in Plan 01-01) without modification.
 
     Per D-03 (CONTEXT.md):
-      baseline-local.Export.wacomxs  — per-machine baseline (gitignored); this is
+      baseline-local.Export.wacomxs  - per-machine baseline (gitignored); this is
                                        the only file that Reset-WacomMapping.ps1
                                        imports.
-      baseline-reference.Export.wacomxs — committed reference; NEVER imported;
+      baseline-reference.Export.wacomxs - committed reference; NEVER imported;
                                           schema documentation only.
 
     PrefUtil path and import flag verified in Plan 01-01 (see test-log.md):
@@ -25,7 +25,7 @@
 
     GUI DIALOG WARNING:
     PrefUtil.exe opens a native Windows dialog for every /import operation.
-    The /silent flag has NO effect on /import — it only suppresses the help-screen
+    The /silent flag has NO effect on /import - it only suppresses the help-screen
     window.  A dialog will appear when this script runs.  Click OK to restore the
     full-screen mapping.
     This is a known PrefUtil limitation documented in spike/test-log.md (Plan 01-01).
@@ -71,11 +71,11 @@ Write-Host "[Reset-WacomMapping] Importing baseline-local.Export.wacomxs to rest
 
 # --- Import baseline via PrefUtil (Pattern 2: Wait-Process, not -Wait flag) ---
 # WARNING: PrefUtil will open a GUI dialog requiring the user to click OK.
-# This is a known PrefUtil limitation — /silent has no effect on /import.
+# This is a known PrefUtil limitation - /silent has no effect on /import.
 #
 # Wait-Process (not -Wait flag) avoids the 1-second poll floor (PowerShell#24709),
 # keeping Measure-Command timing consistent with Set-WacomMapping.ps1.
-Write-Host "[Reset-WacomMapping] Invoking PrefUtil /import (a GUI dialog will appear — click OK)..."
+Write-Host "[Reset-WacomMapping] Invoking PrefUtil /import (a GUI dialog will appear - click OK)..."
 
 $elapsed = Measure-Command {
     # Import flag '/import' verified in Plan 01-01 (spike/test-log.md).

@@ -8,7 +8,7 @@
     Executes TC-01 through TC-05 in sequence. Between each test case the script
     pauses so you can physically verify stylus behaviour before continuing.
 
-    IMPORTANT — PrefUtil GUI dialog:
+    IMPORTANT - PrefUtil GUI dialog:
     PrefUtil.exe opens a native Windows dialog for EVERY /import operation.
     The /silent flag has NO effect on /import. You must click OK in the dialog
     before the script can continue (Wait-Process blocks until PrefUtil exits).
@@ -53,7 +53,7 @@ if (-not (Test-Path (Join-Path $ScriptDir 'baseline-local.Export.wacomxs'))) {
 # TC-01: Left Half
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Host '--- TC-01: Left Half (X=0 Y=0 Width=960 Height=1080) ---' -ForegroundColor Yellow
-Write-Host 'A PrefUtil dialog will appear — click OK to apply the mapping.'
+Write-Host 'A PrefUtil dialog will appear - click OK to apply the mapping.'
 & (Join-Path $ScriptDir 'Set-WacomMapping.ps1') -X 0 -Y 0 -Width 960 -Height 1080
 Write-Host ''
 Write-Host '>> Verify: draw with the stylus. Cursor should be restricted to the LEFT half of the display.'
@@ -65,7 +65,7 @@ Write-Host ''
 # TC-02: Right Half
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Host '--- TC-02: Right Half (X=960 Y=0 Width=960 Height=1080) ---' -ForegroundColor Yellow
-Write-Host 'A PrefUtil dialog will appear — click OK to apply the mapping.'
+Write-Host 'A PrefUtil dialog will appear - click OK to apply the mapping.'
 & (Join-Path $ScriptDir 'Set-WacomMapping.ps1') -X 960 -Y 0 -Width 960 -Height 1080
 Write-Host ''
 Write-Host '>> Verify: draw with the stylus. Cursor should be restricted to the RIGHT half of the display.'
@@ -77,7 +77,7 @@ Write-Host ''
 # TC-03: Centre Region
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Host '--- TC-03: Centre Region (X=240 Y=270 Width=1440 Height=540) ---' -ForegroundColor Yellow
-Write-Host 'A PrefUtil dialog will appear — click OK to apply the mapping.'
+Write-Host 'A PrefUtil dialog will appear - click OK to apply the mapping.'
 & (Join-Path $ScriptDir 'Set-WacomMapping.ps1') -X 240 -Y 270 -Width 1440 -Height 540
 Write-Host ''
 Write-Host '>> Verify: draw with the stylus. Cursor should be restricted to the CENTRE rectangle'
@@ -87,12 +87,12 @@ Read-Host '>> Press Enter to continue to TC-04 (latency measurement)'
 Write-Host ''
 
 # ─────────────────────────────────────────────────────────────────────────────
-# TC-04: Three Consecutive Changes — Latency (SPIKE-02)
+# TC-04: Three Consecutive Changes - Latency (SPIKE-02)
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Host '--- TC-04: Three Consecutive Changes (latency measurement, SPIKE-02) ---' -ForegroundColor Yellow
 Write-Host 'Three /import calls will be made back-to-back. Each will show a PrefUtil dialog.'
 Write-Host 'Click OK in each dialog as quickly as possible for a representative latency measurement.'
-Write-Host 'Wall-clock time per run is printed below — copy these values into SPIKE-RESULTS.md.'
+Write-Host 'Wall-clock time per run is printed below - copy these values into SPIKE-RESULTS.md.'
 Write-Host ''
 
 Write-Host 'Run 1/3 (X=0 Y=0 Width=960 Height=1080):'
@@ -129,7 +129,7 @@ Write-Host ''
 # TC-05: Reset to Full-Screen (SPIKE-04)
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Host '--- TC-05: Reset to Full-Screen ---' -ForegroundColor Yellow
-Write-Host 'A PrefUtil dialog will appear — click OK to restore the full-screen baseline.'
+Write-Host 'A PrefUtil dialog will appear - click OK to restore the full-screen baseline.'
 & (Join-Path $ScriptDir 'Reset-WacomMapping.ps1')
 Write-Host ''
 Write-Host '>> Verify: draw with the stylus. Cursor should now move freely across the FULL display.'
@@ -144,7 +144,7 @@ Write-Host '     - Working Method (YES/NO/PARTIAL)'
 Write-Host '     - Measured Latency table (copy from TC-04 output above)'
 Write-Host '     - Admin Rights section (re-run Set-WacomMapping.ps1 from a non-elevated prompt)'
 Write-Host '     - DPI / Coordinate System finding'
-Write-Host '     - Service Names — service restart required? (YES/NO/UNKNOWN)'
+Write-Host '     - Service Names - service restart required? (YES/NO/UNKNOWN)'
 Write-Host '     - Recommendation for Phase 2'
 Write-Host '  2. Commit spike/SPIKE-RESULTS.md and spike/test-log.md (updated with raw output)'
 Write-Host '  3. Reply with: ''passed'', ''partial [description]'', or ''failed [description]'''

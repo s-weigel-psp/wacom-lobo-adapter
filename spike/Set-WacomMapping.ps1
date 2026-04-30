@@ -36,10 +36,10 @@
 
     GUI DIALOG WARNING:
     PrefUtil.exe opens a native Windows dialog for every /import operation.
-    The /silent flag has NO effect on /import — it only suppresses the help-screen window.
+    The /silent flag has NO effect on /import - it only suppresses the help-screen window.
     A dialog will appear each time this script runs. Click OK to apply the mapping.
     This is a known PrefUtil limitation documented in spike/test-log.md (Plan 01-01).
-    Phase 2 (C# native host) must use an alternative mechanism — see 01-01-SUMMARY.md.
+    Phase 2 (C# native host) must use an alternative mechanism - see 01-01-SUMMARY.md.
 
     MULTIPLE ArrayElement ENTRIES:
     The preference XML typically contains 3 ArrayElement entries inside
@@ -91,7 +91,7 @@ Write-Host "[Set-WacomMapping] Loading baseline clone into memory..."
 
 # --- Locate all ScreenArea nodes via XPath (D-02) ---
 # XPath confirmed in Plan 01-01 (spike/test-log.md, 01-01-SUMMARY.md).
-# No XML namespace on the root element — -Namespace parameter is NOT needed.
+# No XML namespace on the root element i.e. -Namespace parameter is NOT needed.
 # The test machine had 3 ArrayElement entries inside InputScreenAreaArray;
 # all are updated to apply the mapping consistently.
 Write-Host "[Set-WacomMapping] Locating ScreenArea nodes via XPath..."
@@ -109,36 +109,36 @@ Write-Host "[Set-WacomMapping] Found $nodeCount ScreenArea node(s). Updating all
 
 # --- Set coordinate child elements and AreaType on every ScreenArea node ---
 # Coordinate model (from 01-01-SUMMARY.md, Section 4):
-#   ScreenOutputArea/Origin/X  — left edge in physical pixels
-#   ScreenOutputArea/Origin/Y  — top edge in physical pixels
-#   ScreenOutputArea/Extent/X  — width in physical pixels
-#   ScreenOutputArea/Extent/Y  — height in physical pixels
-#   AreaType                   — 0 = full screen, 1 = custom region
+#   ScreenOutputArea/Origin/X  - left edge in physical pixels
+#   ScreenOutputArea/Origin/Y  - top edge in physical pixels
+#   ScreenOutputArea/Extent/X  - width in physical pixels
+#   ScreenOutputArea/Extent/Y  - height in physical pixels
+#   AreaType                   - 0 = full screen, 1 = custom region
 #
 # Coordinates are XML child ELEMENTS with text content, NOT XML attributes.
 # Assignment syntax: $node.ChildElement.GrandchildElement = [string]$value
 foreach ($screenArea in @($screenAreaNodes)) {
     # Switch to custom region mode (was 0 = full screen)
-    $screenArea.AreaType = [string]1
+    $screenArea.AreaType.InnerText = [string]1
 
     # Set the screen output area coordinates
-    $screenArea.ScreenOutputArea.Origin.X  = [string]$X
-    $screenArea.ScreenOutputArea.Origin.Y  = [string]$Y
-    $screenArea.ScreenOutputArea.Extent.X  = [string]$Width
-    $screenArea.ScreenOutputArea.Extent.Y  = [string]$Height
+    $screenArea.ScreenOutputArea.Origin.X.InnerText  = [string]$X
+    $screenArea.ScreenOutputArea.Origin.Y.InnerText  = [string]$Y
+    $screenArea.ScreenOutputArea.Extent.X.InnerText  = [string]$Width
+    $screenArea.ScreenOutputArea.Extent.Y.InnerText  = [string]$Height
 }
 
 Write-Host "[Set-WacomMapping] Coordinates written to all $nodeCount ScreenArea node(s)."
 
 # --- Save modified XML to temp path ---
-# MUST use .Export.wacomxs extension — PrefUtil silently ignores .xml files.
+# MUST use .Export.wacomxs extension - PrefUtil silently ignores .xml files.
 $doc.Save($TempPath)
 Write-Host "[Set-WacomMapping] Modified XML saved to: $TempPath"
 
 # --- Import via PrefUtil (Pattern 2: Wait-Process, not -Wait flag) ---
 # WARNING: PrefUtil will open a GUI dialog requiring the user to click OK.
-# This is a known PrefUtil limitation — /silent has no effect on /import.
-Write-Host "[Set-WacomMapping] Invoking PrefUtil /import (a GUI dialog will appear — click OK)..."
+# This is a known PrefUtil limitation - /silent has no effect on /import.
+Write-Host "[Set-WacomMapping] Invoking PrefUtil /import (a GUI dialog will appear - click OK)..."
 
 $elapsed = Measure-Command {
     # Import flag '/import' verified in Plan 01-01 (spike/test-log.md).
