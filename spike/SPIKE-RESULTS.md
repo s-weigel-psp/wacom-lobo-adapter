@@ -1,35 +1,37 @@
 # Phase 1 Spike Results: Wacom Mapping via PowerShell
 
-**Executed by:** [name]
-**Date:** [date]
-**Test machine:** [OS version, Wacom driver version]
-**Tablet:** Wacom One M — connected: [yes/no]
-**Status:** [PASS / FAIL / PARTIAL]
+**Executed by:** [Simeon Weigel](mailto:simeon@sj4jc.de)
+**Date:** 2026 April 29th
+**Test machine:** Windows 11 version 23H2 (Build 22631.6199)
+**Tablet:** Wacom One M — connected: yes
+**Status:** PARTIAL
 
 ---
 
 ## Working Method
 
 **Does PowerShell + PrefUtil scripting work to restrict the Wacom stylus to an arbitrary screen region?**
-[YES / NO / PARTIAL — describe]
+YES
 
 **Mechanism:**
 Clone spike/baseline-local.Export.wacomxs → modify screen-mapping element via Select-Xml XPath → import modified XML via PrefUtil.exe /import → Wacom driver applies region restriction.
 
 **GUI Dialog Note:** Every invocation of `PrefUtil.exe /import` opens a native Windows dialog requiring the user to click OK. The `/silent` flag has NO effect on `/import`. This is a known PrefUtil limitation (documented in Plan 01-01). Each test case will prompt one dialog click.
 
-**Confidence:** [HIGH / MEDIUM / LOW] — [reason]
+**Confidence:** LOW — only on first update one dialog click will suffice. Subsequent updates will ask the user where to backup the previous Settings. The first update uses a default location, hence one click, subsequent updates cannot override the first backup and need to ask the user to either skip backup or choose a location.
 
 ---
 
 ## Binary Path and Invocation
 
 **Executable found at:**
-```
+
+```txt
 C:\Program Files\Tablet\Wacom\PrefUtil.exe
 ```
 
 **Import command:**
+
 ```powershell
 $proc = Start-Process -FilePath 'C:\Program Files\Tablet\Wacom\PrefUtil.exe' `
                       -ArgumentList '/import', $TempPath `
@@ -38,6 +40,7 @@ $proc | Wait-Process
 ```
 
 **Export command:**
+
 ```powershell
 $proc = Start-Process -FilePath 'C:\Program Files\Tablet\Wacom\PrefUtil.exe' `
                       -ArgumentList '/export', $OutputPath `
@@ -45,7 +48,7 @@ $proc = Start-Process -FilePath 'C:\Program Files\Tablet\Wacom\PrefUtil.exe' `
 $proc | Wait-Process
 ```
 
-**Note:** `/silent` flag suppresses the help-screen window only; it does NOT suppress the GUI dialog on `/import` or `/export`.
+**Note:** `/silent` flag suppresses only some commands' GUI; it does NOT suppress the GUI dialog on `/import` or `/export`.
 
 **PrefUtil help output:** (see spike/test-log.md § 1. PrefUtil Binary)
 
@@ -56,6 +59,7 @@ $proc | Wait-Process
 **File extension:** `.Export.wacomxs` (MUST match — `.xml` extension silently fails to write at the specified path)
 
 **Screen-mapping element:**
+
 ```xml
 <ScreenArea type="map">
   <AreaType type="integer">0</AreaType>       <!-- 0=full screen, 1=custom region -->
@@ -78,14 +82,17 @@ $proc | Wait-Process
 **Element name:** `ScreenArea`
 **Coordinate model:** Child XML elements with text content (NOT attributes)
 **Coordinate semantics:**
+
 - `ScreenOutputArea/Origin/X` — left edge in physical pixels
 - `ScreenOutputArea/Origin/Y` — top edge in physical pixels
 - `ScreenOutputArea/Extent/X` — width in physical pixels
 - `ScreenOutputArea/Extent/Y` — height in physical pixels
+
 **XML namespace:** none — root element is `<root type="map">` with no namespace declaration
 
 **XPath used in Set-WacomMapping.ps1:**
-```
+
+```txt
 //InputScreenAreaArray/ArrayElement/ScreenArea
 ```
 
@@ -99,13 +106,14 @@ No `-Namespace` parameter needed for `Select-Xml` — confirmed no namespace on 
 
 **Services found on test machine:**
 
-| Name | DisplayName | Status |
-|------|-------------|--------|
+| Name                | DisplayName                | Status  |
+|---------------------|----------------------------|---------|
 | `WtabletServicePro` | Wacom Professional Service | Running |
 
-**Service restart required for mapping to take effect:** [YES — must restart 'WtabletServicePro'] / [NO — PrefUtil notifies service directly] / [UNKNOWN — could not confirm]
+**Service restart required for mapping to take effect:** NO — PrefUtil notifies service directly
 
 **Command to restart (if required):**
+
 ```powershell
 Restart-Service -Name 'WtabletServicePro' -Force
 ```
@@ -114,31 +122,36 @@ Restart-Service -Name 'WtabletServicePro' -Force
 
 ## Measured Latency (SPIKE-02)
 
-**Test: Three consecutive mapping changes (Set-WacomMapping.ps1 invocations via run-tests.ps1 TC-04)**
+### Test: Three consecutive mapping changes (Set-WacomMapping.ps1 invocations via run-tests.ps1 TC-04)
 
-| Run | Command | Elapsed (ms) |
-|-----|---------|-------------|
-| 1 | `.\Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080` | [ms] |
-| 2 | `.\Set-WacomMapping.ps1 -X 960 -Y 0 -Width 960 -Height 1080` | [ms] |
-| 3 | `.\Set-WacomMapping.ps1 -X 240 -Y 270 -Width 1440 -Height 540` | [ms] |
+| Run | Command                                                        | Elapsed (ms) |
+|-----|----------------------------------------------------------------|--------------|
+| 1   | `.\Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080`     | 6659         |
+| 2   | `.\Set-WacomMapping.ps1 -X 960 -Y 0 -Width 960 -Height 1080`   | 4597         |
+| 3   | `.\Set-WacomMapping.ps1 -X 240 -Y 270 -Width 1440 -Height 540` | 4156         |
 
-**Mean latency:** [ms]
-**Maximum latency:** [ms]
-**SPIKE-02 result:** [PASS — all runs < 3000 ms] / [FAIL — run N exceeded 3000 ms]
+**Mean latency:** 5137
+**Maximum latency:** 6659
+**SPIKE-02 result:** FAIL (at least one run >= 3000 ms)
 
-Note: Latency measured via `Measure-Command` wrapping `$proc | Wait-Process` inside run-tests.ps1 (TC-04).
-`Start-Process -Wait` was NOT used — it has a 1-second poll floor (PowerShell issue #24709).
+Note:
+
+- Latency measured via `Measure-Command` wrapping `$proc | Wait-Process` inside run-tests.ps1 (TC-04).
+- `Start-Process -Wait` was NOT used — it has a 1-second poll floor (PowerShell issue #24709).
+- Several User Clicks were recorded in the Latency. The user was the main reason for latency.
 
 ---
 
 ## Admin Rights Requirement (SPIKE-01 dependency)
 
 **PrefUtil import from non-elevated prompt:**
+
 - Exit code: [0 / other]
 - Mapping applied: [yes / no]
 - Result: [elevation required / NOT required]
 
 **PrefUtil import from elevated prompt:**
+
 - Exit code: [0 / other]
 - Mapping applied: [yes / no]
 
@@ -151,49 +164,60 @@ Note: Latency measured via `Measure-Command` wrapping `$proc | Wait-Process` ins
 ## Test Case Results
 
 ### TC-01: Left Half Mapping (SPIKE-01, SPIKE-03)
-```
+
+```powershell
 Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080
 ```
+
 - Script exited with code: [0 / other]
 - PrefUtil dialog appeared: [yes / no]
 - Stylus restricted to left half: [YES / NO / PARTIAL]
 - Notes: [any observations]
 
 ### TC-02: Right Half Mapping (SPIKE-01, SPIKE-03)
-```
+
+```powershell
 Set-WacomMapping.ps1 -X 960 -Y 0 -Width 960 -Height 1080
 ```
+
 - Script exited with code: [0 / other]
 - PrefUtil dialog appeared: [yes / no]
 - Stylus restricted to right half: [YES / NO / PARTIAL]
 - Notes:
 
 ### TC-03: Centre Region (SPIKE-01, SPIKE-03)
-```
+
+```powershell
 Set-WacomMapping.ps1 -X 240 -Y 270 -Width 1440 -Height 540
 ```
+
 - Script exited with code: [0 / other]
 - PrefUtil dialog appeared: [yes / no]
 - Stylus restricted to centre region: [YES / NO / PARTIAL]
 - Notes:
 
 ### TC-04: Three Consecutive Changes — Latency (SPIKE-02)
+
 See Measured Latency table above.
 (run-tests.ps1 prints per-run ms and SPIKE-02 PASS/FAIL automatically)
 
 ### TC-05: Reset to Full-Screen (SPIKE-04)
-```
+
+```powershell
 Reset-WacomMapping.ps1
 ```
+
 - Script exited with code: [0 / other]
 - PrefUtil dialog appeared: [yes / no]
 - Stylus covers full screen after reset: [YES / NO / PARTIAL]
 - Notes:
 
 ### TC-06: Optional — Multi-Monitor (if second display available)
-```
+
+```powershell
 Set-WacomMapping.ps1 -X [secondary display offset X] -Y 0 -Width [secondary width] -Height [secondary height]
 ```
+
 - Performed: [YES / NO — single monitor only]
 - Result: [if performed]
 
@@ -220,6 +244,7 @@ Set-WacomMapping.ps1 -X [secondary display offset X] -Y 0 -Width [secondary widt
 [One clear sentence: e.g., "Port the clone-and-modify-XML + PrefUtil invocation approach to C# .NET 8 — all spike objectives passed, latency is well under 3s, and no elevation is required."]
 
 **Phase 2 implementation notes:**
+
 - Binary path to hardcode (or discover via registry): `C:\Program Files\Tablet\Wacom\PrefUtil.exe`
 - Import flag to use: `/import`
 - File extension: `.Export.wacomxs` (MUST match — `.xml` silently fails)
