@@ -26,9 +26,9 @@ Four phases take the project from feasibility validation to production domain ro
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Discover PrefUtil binary, export two XML baselines, diff to identify screen-mapping tags, document service names, commit baseline-reference.xml
-- [ ] 01-02-PLAN.md — Write Set-WacomMapping.ps1 (clone baseline, Select-Xml XPath, PrefUtil import) and Reset-WacomMapping.ps1 using discovered tag names from Plan 01-01
-- [ ] 01-03-PLAN.md — Execute 5 test cases (left half, right half, centre, 3× latency, reset), fill SPIKE-RESULTS.md with all required fields and Phase 2 recommendation
+- [x] 01-01-PLAN.md — Discover PrefUtil binary, export two XML baselines, diff to identify screen-mapping tags, document service names, commit baseline-reference.xml
+- [x] 01-02-PLAN.md — Write Set-WacomMapping.ps1 (clone baseline, Select-Xml XPath, PrefUtil import) and Reset-WacomMapping.ps1 using discovered tag names from Plan 01-01
+- [x] 01-03-PLAN.md — Execute 5 test cases (left half, right half, centre, 3× latency, reset), fill SPIKE-RESULTS.md with all required fields and Phase 2 recommendation
 
 ### Phase 2: Native Messaging Host
 **Goal**: Production-ready Windows executable that receives Native Messaging commands from a browser extension and drives the Wacom driver; delivered as a silent MSI installer.
