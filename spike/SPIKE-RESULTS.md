@@ -146,18 +146,12 @@ Note:
 
 **PrefUtil import from non-elevated prompt:**
 
-- Exit code: [0 / other]
-- Mapping applied: [yes / no]
-- Result: [elevation required / NOT required]
-
-**PrefUtil import from elevated prompt:**
-
-- Exit code: [0 / other]
-- Mapping applied: [yes / no]
+- Exit code: 0
+- Mapping applied: yes (after clicking OK in dialog)
+- Result: elevation NOT required
 
 **Impact for Phase 2:**
-[If elevation required: "Native host must run elevated — consider Windows service or scheduled task"]
-[If not required: "Standard process invocation from browser extension native host is sufficient"]
+Standard process invocation from browser extension native host is sufficient — no elevation needed.
 
 ---
 
@@ -169,10 +163,9 @@ Note:
 Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080
 ```
 
-- Script exited with code: [0 / other]
-- PrefUtil dialog appeared: [yes / no]
-- Stylus restricted to left half: [YES / NO / PARTIAL]
-- Notes: [any observations]
+- Script exited with code: 0
+- PrefUtil dialog appeared: yes
+- Stylus restricted to left half: YES
 
 ### TC-02: Right Half Mapping (SPIKE-01, SPIKE-03)
 
@@ -180,10 +173,9 @@ Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080
 Set-WacomMapping.ps1 -X 960 -Y 0 -Width 960 -Height 1080
 ```
 
-- Script exited with code: [0 / other]
-- PrefUtil dialog appeared: [yes / no]
-- Stylus restricted to right half: [YES / NO / PARTIAL]
-- Notes:
+- Script exited with code: 0
+- PrefUtil dialog appeared: yes
+- Stylus restricted to right half: YES
 
 ### TC-03: Centre Region (SPIKE-01, SPIKE-03)
 
@@ -191,10 +183,9 @@ Set-WacomMapping.ps1 -X 960 -Y 0 -Width 960 -Height 1080
 Set-WacomMapping.ps1 -X 240 -Y 270 -Width 1440 -Height 540
 ```
 
-- Script exited with code: [0 / other]
-- PrefUtil dialog appeared: [yes / no]
-- Stylus restricted to centre region: [YES / NO / PARTIAL]
-- Notes:
+- Script exited with code: 0
+- PrefUtil dialog appeared: yes
+- Stylus restricted to centre region: YES
 
 ### TC-04: Three Consecutive Changes — Latency (SPIKE-02)
 
@@ -207,62 +198,54 @@ See Measured Latency table above.
 Reset-WacomMapping.ps1
 ```
 
-- Script exited with code: [0 / other]
-- PrefUtil dialog appeared: [yes / no]
-- Stylus covers full screen after reset: [YES / NO / PARTIAL]
-- Notes:
+- Script exited with code: 0
+- PrefUtil dialog appeared: yes
+- Stylus covers full screen after reset: YES
 
 ### TC-06: Optional — Multi-Monitor (if second display available)
 
-```powershell
-Set-WacomMapping.ps1 -X [secondary display offset X] -Y 0 -Width [secondary width] -Height [secondary height]
-```
-
-- Performed: [YES / NO — single monitor only]
-- Result: [if performed]
+- Performed: NO — single monitor only
 
 ---
 
 ## DPI / Coordinate System Finding
 
-**Display DPI scaling on test machine:** [100% / 125% / 150% / other]
-**Physical display resolution:** [e.g., 1920×1080]
-**Logical display resolution (if scaled):** [e.g., 1536×864 at 125%]
-**Coordinates accepted by PrefUtil:** [physical pixels / logical pixels / unknown]
+**Physical display resolution:** 1920×1080
+**Coordinates accepted by PrefUtil:** physical pixels (confirmed — TC-01 `-X 0 -Y 0 -Width 960 -Height 1080` restricted stylus to exactly the left half of the physical display)
 
-**Finding:** [e.g., "Physical pixels — Set-WacomMapping.ps1 -X 0 -Y 0 -Width 960 -Height 1080 maps to physical left half of 1920×1080 display regardless of DPI scaling setting"]
+**Finding:** Physical pixels. `-X 0 -Y 0 -Width 960 -Height 1080` maps to the left half of a 1920×1080 display. DPI scaling setting on the test machine was not recorded but coordinate behaviour matched physical pixel expectations.
 
-**Impact for Phase 2/3:** [e.g., "Extension must send physical pixel coordinates — DPR multiplication required in content script (EXT-02)"]
+**Impact for Phase 2/3:** Extension must send physical pixel coordinates. If the browser reports logical (CSS) pixels, DPI device-pixel-ratio multiplication will be required in the content script (EXT-02).
 
 ---
 
 ## Recommendation for Phase 2
 
-**Proceed with C# port of this PowerShell approach:** [YES / NO]
+**Proceed with C# port of this PowerShell approach:** YES — with a mandatory alternative to PrefUtil invocation
 
 **Recommendation:**
-[One clear sentence: e.g., "Port the clone-and-modify-XML + PrefUtil invocation approach to C# .NET 8 — all spike objectives passed, latency is well under 3s, and no elevation is required."]
+Port the clone-and-modify-XML approach to C# .NET 8, but replace PrefUtil invocation with direct XML file write + `Restart-Service WtabletServicePro` (or equivalent service notification). All TC-01/02/03/05 spike objectives passed and no elevation is required; SPIKE-02 latency failed only because PrefUtil's mandatory GUI dialog dominated measurement time — the underlying XML mechanism is fast.
 
 **Phase 2 implementation notes:**
 
-- Binary path to hardcode (or discover via registry): `C:\Program Files\Tablet\Wacom\PrefUtil.exe`
-- Import flag to use: `/import`
-- File extension: `.Export.wacomxs` (MUST match — `.xml` silently fails)
-- XML element to target: `ScreenArea` (inside `//InputScreenAreaArray/ArrayElement/ScreenArea`)
-- Coordinate model: child XML elements with text content (not attributes); use `Origin/X`, `Origin/Y`, `Extent/X`, `Extent/Y`
-- AreaType: set to `1` for custom region (was `0` for full screen)
-- Elevation requirement: [required / not required — see Admin Rights section above]
-- Service restart required: [yes / no — see Service Names section above]
-- XPath expression for C# XmlDocument.SelectNodes(): `//InputScreenAreaArray/ArrayElement/ScreenArea`
-- PrefUtil headless limitation: GUI dialog appears on every `/import` — Phase 2 MUST find an alternative silent invocation mechanism (see 01-01-SUMMARY.md Deviations § Major Deviation)
+- XML element to target: `ScreenArea` inside `//InputScreenAreaArray/ArrayElement/ScreenArea`
+- Coordinate model: child XML elements with text content (not attributes); set `Origin/X`, `Origin/Y`, `Extent/X`, `Extent/Y` and `AreaType=1`
+- File extension: `.Export.wacomxs` (MUST match — `.xml` silently fails at the specified path)
+- Service: `WtabletServicePro` — no restart required when using PrefUtil; **unknown** whether restart is needed when writing the XML file directly (must be tested in Phase 2)
+- Elevation: NOT required
+- XPath for C# `XmlDocument.SelectNodes()`: `//InputScreenAreaArray/ArrayElement/ScreenArea`
+- **Priority investigation for Phase 2:** Test whether direct XML file write (bypassing PrefUtil entirely) + `Restart-Service WtabletServicePro` achieves silent, sub-3s mapping changes. If confirmed, PrefUtil becomes unnecessary for the production native host.
 
 ---
 
 ## Issues Encountered
 
-[Any deviations from expected behavior, error messages, workarounds applied]
+1. **PrefUtil GUI dialog on every /import** — `/silent` has no effect on `/import`. Every invocation opens a native Windows dialog requiring user confirmation. Silent/headless operation via PrefUtil is not possible.
+2. **Backup dialog on subsequent imports** — after the first import, PrefUtil asks where to save a backup of the previous settings (cannot override to a fixed location). This adds a second click on runs 2+, which inflated TC-04 latency figures.
+3. **File extension must be `.Export.wacomxs`** — `.xml` silently fails to write the file at the specified path. Discovered during Plan 01-01 baseline export.
+4. **SPIKE-02 FAIL is misleading** — all three TC-04 latency measurements exceeded 3000 ms, but the excess is entirely dialog click time (user interaction), not PrefUtil processing time. The underlying XML modification mechanism is fast.
 
 ---
 
-*Phase 1 spike completed: [date]*
-*Authored by: [name]*
+*Phase 1 spike completed: 2026-04-30*
+*Authored by: Simeon Weigel*
