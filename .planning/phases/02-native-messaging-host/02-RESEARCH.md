@@ -695,22 +695,25 @@ go build -o wacom-bridge.exe ./cmd/wacom-bridge/
 
 ---
 
-## Open Questions
+## Open Questions (PARTIALLY RESOLVED)
 
 1. **Does direct XML write require a service restart, or does WtabletServicePro hot-reload?**
    - What we know: PrefUtil notifies the service directly (no restart needed when using PrefUtil). Direct write bypasses this notification mechanism.
    - What's unclear: Whether `WtabletServicePro` watches the preference file via `ReadDirectoryChangesW` or only reads on explicit notification/restart.
    - Recommendation: Plan 02-02 must include a test task: write the XML directly, wait 2 seconds, check if mapping applied. If not, restart the service and check again.
+   - **DEFERRED: resolved by Plan 02-02 Task 1 Process Monitor checkpoint (requires physical Windows + Wacom device)**
 
 2. **What is the exact path of the preference file the Wacom service reads?**
    - What we know: `%APPDATA%\WTablet\Wacom_Tablet.dat` is the documented user preference location. The `.Export.wacomxs` format is used by PrefUtil.
    - What's unclear: Whether `WtabletServicePro` reads `.Export.wacomxs` files directly, or whether PrefUtil converts them to the `.dat` binary format before writing.
    - Recommendation: Use Process Monitor on the test machine during a PrefUtil `/import` to trace exactly which files are read/written. This must be the first task in Plan 02-02.
+   - **DEFERRED: resolved by Plan 02-02 Task 1 Process Monitor checkpoint (requires physical Windows + Wacom device)**
 
 3. **What is the exact Go mechanism to set binary mode on piped stdin/stdout on Windows?**
    - What we know: The standard C approach is `_setmode(fileno(stdin), O_BINARY)`. `SetConsoleMode` applies to console handles, not pipe handles.
    - What's unclear: Whether `golang.org/x/sys/windows` exposes a clean way to call `_setmode` on `os.Stdin.Fd()` without CGO.
    - Recommendation: Research `windows.NewLazySystemDLL("msvcrt.dll")` pattern for calling `_setmode` from pure Go, or use a `//go:linkname` trick. Test on Windows before finalizing Plan 02-01.
+   - **RESOLVED: Plan 02-01 implements `msvcrt.dll _setmode` via `windows.NewLazySystemDLL` in a `//go:build windows` init function — `SetConsoleMode` is NOT used for pipe handles**
 
 ---
 
