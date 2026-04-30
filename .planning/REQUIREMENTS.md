@@ -7,10 +7,12 @@
 
 ### Spike (Phase 1 — Feasibility)
 
-- [ ] **SPIKE-01**: PowerShell script sets Wacom tablet mapping to an arbitrary screen region specified by X, Y, Width, Height parameters
+- [x] **SPIKE-01
+**: PowerShell script sets Wacom tablet mapping to an arbitrary screen region specified by X, Y, Width, Height parameters
 - [ ] **SPIKE-02**: Mapping change completes in under 3 seconds (measured across consecutive changes)
 - [ ] **SPIKE-03**: Wacom stylus respects the new mapping region after a change (stays within mapped area)
-- [ ] **SPIKE-04**: Reset script restores full-screen mapping from baseline profile
+- [x] **SPIKE-04
+**: Reset script restores full-screen mapping from baseline profile
 - [x] **SPIKE-05
 **: SPIKE-RESULTS.md documents working method, binary paths, XML structure, service names, measured latency, and recommendation for Phase 2
 
