@@ -7,7 +7,7 @@ Four phases take the project from feasibility validation to production domain ro
 ## Phases
 
 - [ ] **Phase 1: Wacom Mapping Spike** - Verify that Wacom tablet mapping can be programmatically set at runtime via PowerShell + `Wacom_TabletUserPrefs.exe`
-- [ ] **Phase 2: Native Messaging Host** - Build the production C# .NET 8 Windows helper that receives mapping commands and drives the Wacom driver
+- [ ] **Phase 2: Native Messaging Host** - Build the production Go Windows helper that receives mapping commands and drives the Wacom driver
 - [ ] **Phase 3: Browser Extension** - Build the Chrome/Edge MV3 extension that tracks the DOM element and sends coordinates to the native host
 - [ ] **Phase 4: Domain Deployment** - Package and deploy the full system to all domain machines via GPO/Intune
 
@@ -28,7 +28,7 @@ Four phases take the project from feasibility validation to production domain ro
 Plans:
 - [x] 01-01-PLAN.md — Discover PrefUtil binary, export two XML baselines, diff to identify screen-mapping tags, document service names, commit baseline-reference.xml
 - [x] 01-02-PLAN.md — Write Set-WacomMapping.ps1 (clone baseline, Select-Xml XPath, PrefUtil import) and Reset-WacomMapping.ps1 using discovered tag names from Plan 01-01
-- [x] 01-03-PLAN.md — Execute 5 test cases (left half, right half, centre, 3× latency, reset), fill SPIKE-RESULTS.md with all required fields and Phase 2 recommendation
+- [x] 01-03-PLAN.md — Execute 5 test cases (left half, right half, centre, 3x latency, reset), fill SPIKE-RESULTS.md with all required fields and Phase 2 recommendation
 
 ### Phase 2: Native Messaging Host
 **Goal**: Production-ready Windows executable that receives Native Messaging commands from a browser extension and drives the Wacom driver; delivered as a silent MSI installer.
@@ -44,9 +44,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Scaffold C# .NET 8 console app — implement Native Messaging stdin/stdout protocol (4-byte length prefix + JSON), command dispatcher, and basic logging to `%LOCALAPPDATA%\WacomBridge\logs\`
-- [ ] 02-02: Port Wacom XML manipulation from PowerShell spike — implement `set_mapping`, `reset_mapping`, preference file read/write, `Wacom_TabletUserPrefs.exe` invocation; handle admin-rights scenario from spike findings
-- [ ] 02-03: Create WiX 4 installer — single-file .exe bundled, Chrome + Edge registry manifest entries (`HKLM\SOFTWARE\Google\Chrome\NativeMessagingHosts\com.eurefirma.wacombridge` and Edge equivalent), silent install/uninstall support
+- [ ] 02-01-PLAN.md — Author docs/protocol.md JSON contract (first deliverable), scaffold Go module, implement Native Messaging 4-byte LE framing, binary mode init, command dispatcher, slog logging to %LOCALAPPDATA%\WacomBridge\logs\
+- [ ] 02-02-PLAN.md — Implement Wacom XML integration: port Set-WacomMapping.ps1 + Reset-WacomMapping.ps1 to Go (clone-and-modify, all ArrayElement entries), direct XML write to discovered preference path, conditional WtabletServicePro restart via SCM; includes Process Monitor discovery checkpoint
+- [ ] 02-03-PLAN.md — WiX 4 MSI installer: wacom-bridge.exe + manifest JSON files, HKLM Chrome and Edge registry entries (64-bit + WOW6432Node), MajorUpgrade for future upgrades
 
 ### Phase 3: Browser Extension
 **Goal**: Chrome/Edge Manifest V3 extension that detects the target DOM element, computes its screen coordinates (DPR-corrected), drives the native host, and shows a banner when the area changes.
@@ -73,7 +73,7 @@ Plans:
   1. Extension appears in Chrome and Edge on a fresh domain machine without any user installation action
   2. Opening the target application URL on a managed machine activates Wacom mapping without browser permission prompts
   3. Native host MSI deploys silently to the pilot group via Intune (or GPO Software Installation) and is confirmed installed
-  4. End-to-end flow works on 2 pilot machines: open PDF → stylus confined to PDF area → move window → banner appears → re-calibrate → stylus confined to new area
+  4. End-to-end flow works on 2 pilot machines: open PDF -> stylus confined to PDF area -> move window -> banner appears -> re-calibrate -> stylus confined to new area
 **Plans**: 3 plans
 
 Plans:
@@ -84,7 +84,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phase 1 → Phase 2 (parallel with Phase 3) → Phase 4
+Phase 1 -> Phase 2 (parallel with Phase 3) -> Phase 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
