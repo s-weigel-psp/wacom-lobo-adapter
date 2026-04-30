@@ -45,14 +45,14 @@ The Wacom stylus is confined to the PDF area with a single activation, and the u
 - **Browser**: Chrome and Edge (Manifest V3) — enterprise-managed
 - **Deployment**: GPO/Intune managed — extension force-installed, no user action required
 - **Latency**: Mapping change must complete in < 3 seconds (acceptable for explicit sync on activation)
-- **Tech Stack**: C# .NET 8 single-file exe (native host), PowerShell (Phase 1 spike), MV3 browser extension, WiX MSI packaging, Shadow DOM for banner UI
+- **Tech Stack**: Go single-binary exe (native host), PowerShell (Phase 1 spike), MV3 browser extension, WiX MSI packaging, Shadow DOM for banner UI
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Explicit sync model instead of live tracking | Wacom driver has no documented live API; ~1–2s per mapping change makes live tracking unusable; observed usage pattern (open PDF once, work in it) makes explicit sync functionally equivalent at far lower complexity | — Pending |
-| C# .NET 8 for native host | Production-grade Windows integration, single-file deployment possible, easy to maintain and debug | — Pending |
+| Go for native host | Single-binary deployment (no runtime dependency), good Windows API access via golang.org/x/sys/windows, developer preference, easy to maintain | — Decided (Phase 2 discuss) |
 | Shadow DOM for extension banner UI | Prevents styling conflicts with the third-party application's CSS | — Pending |
 | Phase 1 is a spike first | Technical risk is HIGH — if `Wacom_TabletUserPrefs.exe` cannot be scripted reliably, the whole project design needs to change | — Pending |
 | Phase 3 can run in parallel with Phase 2 | Extension and host have well-defined interface (Native Messaging JSON protocol) — teams can work independently once Phase 1 validates the approach | — Pending |
