@@ -31,12 +31,12 @@
 
 ### Browser Extension (Phase 3)
 
-- [ ] **EXT-01**: Content script detects the target DOM element by its configured ID on page load
-- [ ] **EXT-02**: Extension calculates the element's screen coordinates accounting for Windows DPI scaling
-- [ ] **EXT-03**: Extension sends mapping coordinates to native host when user activates PDF mode
-- [ ] **EXT-04**: Extension shows a banner (Shadow DOM) when the PDF area position or size changes
-- [ ] **EXT-05**: User can re-sync Wacom mapping by clicking the banner's calibration button
-- [ ] **EXT-06**: Extension handles native host unavailability gracefully (shows error state in banner)
+- [x] **EXT-01**: Content script detects the target DOM element by its configured ID on page load
+- [x] **EXT-02**: Extension calculates the element's screen coordinates accounting for Windows DPI scaling
+- [x] **EXT-03**: Extension sends mapping coordinates to native host when user activates PDF mode
+- [x] **EXT-04**: Extension shows a banner (Shadow DOM) when the PDF area position or size changes
+- [x] **EXT-05**: User can re-sync Wacom mapping by clicking the banner's calibration button
+- [x] **EXT-06**: Extension handles native host unavailability gracefully (shows error state in banner)
 
 ### Deployment (Phase 4)
 
@@ -83,12 +83,12 @@
 | HOST-04 | Phase 2 | Pending |
 | HOST-05 | Phase 2 | Pending |
 | HOST-06 | Phase 2 | Pending |
-| EXT-01 | Phase 3 | Pending |
-| EXT-02 | Phase 3 | Pending |
-| EXT-03 | Phase 3 | Pending |
-| EXT-04 | Phase 3 | Pending |
-| EXT-05 | Phase 3 | Pending |
-| EXT-06 | Phase 3 | Pending |
+| EXT-01 | Phase 3 | Complete |
+| EXT-02 | Phase 3 | Complete |
+| EXT-03 | Phase 3 | Complete |
+| EXT-04 | Phase 3 | Complete |
+| EXT-05 | Phase 3 | Complete |
+| EXT-06 | Phase 3 | Complete |
 | DEPLOY-01 | Phase 4 | Pending |
 | DEPLOY-02 | Phase 4 | Pending |
 | DEPLOY-03 | Phase 4 | Pending |

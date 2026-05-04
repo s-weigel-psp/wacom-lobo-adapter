@@ -8,7 +8,7 @@ Four phases take the project from feasibility validation to production domain ro
 
 - [ ] **Phase 1: Wacom Mapping Spike** - Verify that Wacom tablet mapping can be programmatically set at runtime via PowerShell + `Wacom_TabletUserPrefs.exe`
 - [ ] **Phase 2: Native Messaging Host** - Build the production Go Windows helper that receives mapping commands and drives the Wacom driver
-- [ ] **Phase 3: Browser Extension** - Build the Chrome/Edge MV3 extension that tracks the DOM element and sends coordinates to the native host
+- [x] **Phase 3: Browser Extension** - Build the Chrome/Edge MV3 extension that tracks the DOM element and sends coordinates to the native host (completed 2026-05-04)
 - [ ] **Phase 4: Domain Deployment** - Package and deploy the full system to all domain machines via GPO/Intune
 
 ## Phase Details
@@ -61,9 +61,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Scaffold MV3 extension: manifest.json (nativeMessaging + storage permissions, file:///C:/WacomTest/*.html match), background.js service worker (NATIVE_COMMAND relay, sendNativeMessage to com.brantpoint.wacombridge, return true), config.js (DEFAULT_TARGETS, HOST_NAME, POLL_INTERVAL_MS, DEBOUNCE_MS, AUTO_DISMISS_MS), content.js stub with ES module imports and sendNativeCommand relay
-- [ ] 03-02-PLAN.md — Implement content.js coordinate calculation and staleness detection: getPhysicalCoords() with DPR formula (Math.round((rect + screenX/Y) * devicePixelRatio)), three-trigger staleness detection (ResizeObserver + window resize + 1s screenX/Y poll), Page Visibility pause/resume, syncMapping() sending set_mapping command with ERR_ error handling
-- [ ] 03-03-PLAN.md — Shadow DOM banner UI and options page: banner.js with createBanner() factory (closed mode, four states per UI-SPEC.md, auto-dismiss synced after 3000ms, 300ms debounce), options.html/js/css with chrome.storage.sync tuple CRUD, validation for empty fields and invalid URL patterns
+- [x] 03-01-PLAN.md — Scaffold MV3 extension: manifest.json (nativeMessaging + storage permissions, file:///C:/WacomTest/*.html match), background.js service worker (NATIVE_COMMAND relay, sendNativeMessage to com.brantpoint.wacombridge, return true), config.js (DEFAULT_TARGETS, HOST_NAME, POLL_INTERVAL_MS, DEBOUNCE_MS, AUTO_DISMISS_MS), content.js stub with ES module imports and sendNativeCommand relay
+- [x] 03-02-PLAN.md — Implement content.js coordinate calculation and staleness detection: getPhysicalCoords() with DPR formula (Math.round((rect + screenX/Y) * devicePixelRatio)), three-trigger staleness detection (ResizeObserver + window resize + 1s screenX/Y poll), Page Visibility pause/resume, syncMapping() sending set_mapping command with ERR_ error handling
+- [x] 03-03-PLAN.md — Shadow DOM banner UI and options page: banner.js with createBanner() factory (closed mode, four states per UI-SPEC.md, auto-dismiss synced after 3000ms, 300ms debounce), options.html/js/css with chrome.storage.sync tuple CRUD, validation for empty fields and invalid URL patterns
 
 ### Phase 4: Domain Deployment
 **Goal**: The full system (extension + native host) is deployed to all domain machines without per-user action, validated with a pilot group before broad rollout.
@@ -90,5 +90,5 @@ Phase 1 -> Phase 2 (parallel with Phase 3) -> Phase 4
 |-------|----------------|--------|-----------|
 | 1. Wacom Mapping Spike | 0/3 | Not started | - |
 | 2. Native Messaging Host | 0/3 | Not started | - |
-| 3. Browser Extension | 0/3 | Not started | - |
+| 3. Browser Extension | 3/3 | Complete    | 2026-05-04 |
 | 4. Domain Deployment | 0/3 | Not started | - |
