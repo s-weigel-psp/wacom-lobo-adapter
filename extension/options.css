@@ -1,0 +1,139 @@
+/* options.css — Wacom Bridge options page styles */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333333;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  min-width: 480px;
+}
+
+.container {
+  padding: 32px;
+  max-width: 720px;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 16px;
+}
+
+/* Tuple list */
+#tuple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.tuple-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.tuple-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.tuple-field label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+}
+
+.tuple-field input {
+  flex: 1;
+  min-width: 140px;
+  height: 32px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333333;
+  background: #ffffff;
+}
+
+.tuple-field input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.tuple-field input.invalid {
+  border-color: #f44336;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #f44336;
+  min-height: 16px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #1976d2;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.btn-primary:hover { background: #1565c0; }
+
+.btn-destructive {
+  color: #f44336;
+  border: 1px solid #f44336;
+  background: transparent;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.btn-destructive:hover { background: #ffebee; }
+
+/* Action rows */
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.action-row--save {
+  margin-top: 24px;
+}
+
+/* Status and empty messages */
+.status-message {
+  font-size: 14px;
+  color: #333333;
+}
+
+.empty-message {
+  font-size: 14px;
+  color: #666666;
+  margin: 8px 0;
+}

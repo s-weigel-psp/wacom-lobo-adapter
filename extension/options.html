@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wacom Bridge — Target Elements</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Target Elements</h2>
+
+    <div id="tuple-list">
+      <!-- Tuple rows injected by options.js -->
+    </div>
+
+    <p id="empty-message" class="empty-message" style="display:none">
+      No targets configured. Add a target element to get started.
+    </p>
+
+    <div class="action-row">
+      <button id="btn-add" class="btn-primary">Add target</button>
+    </div>
+
+    <div class="action-row action-row--save">
+      <button id="btn-save" class="btn-primary">Save targets</button>
+      <span id="status-message" class="status-message" role="status" aria-live="polite"></span>
+    </div>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>
