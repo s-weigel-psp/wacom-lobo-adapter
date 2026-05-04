@@ -1,0 +1,10 @@
+{
+    "name": "com.eurefirma.wacombridge",
+    "description": "Wacom Bridge - restricts Wacom stylus to PDF region",
+    "path": "C:\\Program Files\\WacomBridge\\wacom-bridge.exe",
+    "type": "stdio",
+    "allowed_origins": [
+        "chrome-extension://PLACEHOLDER_EDGE_EXTENSION_ID/"
+    ],
+    "_dev_note": "Replace PLACEHOLDER_EDGE_EXTENSION_ID with the published Edge Add-ons extension ID before MSI production build. Edge uses chrome-extension:// scheme (not edge://). See Phase 3 and docs/protocol.md Pitfall 3."
+}
