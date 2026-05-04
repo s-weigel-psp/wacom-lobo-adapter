@@ -13,8 +13,8 @@ updated: 2026-05-04T12:00:00Z
 ## Tests
 
 ### 1. set_mapping applies visible Wacom restriction
-expected: Send `chrome.runtime.sendNativeMessage('com.eurefirma.wacombridge', {command:'set_mapping', x:0, y:0, width:960, height:1080})` — stylus is physically restricted to the mapped screen region
-result: [pending]
+expected: Send `chrome.runtime.sendNativeMessage('com.brantpoint.wacombridge', {command:'set_mapping', x:0, y:0, width:960, height:1080})` — stylus is physically restricted to the mapped screen region
+result: PASS — stylus restricted to left half of screen after fix (duplicate XML declaration removed from Go encoder)
 
 ### 2. reset_mapping restores full-screen stylus movement
 expected: Send `{command:'reset_mapping'}` — stylus returns to full-screen movement; PrefUtil baseline import completes successfully end-to-end
