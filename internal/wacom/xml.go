@@ -69,7 +69,13 @@ func SetMapping(logger *slog.Logger, x, y, w, h int) map[string]interface{} {
 		return errMap("XPath '//InputScreenAreaArray/ArrayElement/ScreenArea' returned no nodes", "ERR_NO_SCREEN_AREA_NODES")
 	}
 
-	tempPath := filepath.Join(os.Getenv("TEMP"), "wacom-mapping-temp.Export.wacomxs")
+	// Write to ProgramData so WTabletServicePro (runs as SYSTEM) can read the file.
+	// %TEMP% is per-user and inaccessible to the service account.
+	tempDir := filepath.Join(os.Getenv("ProgramData"), "WacomBridge")
+	if err := os.MkdirAll(tempDir, 0o755); err != nil {
+		return errMap("failed to create temp dir: "+err.Error(), "ERR_XML_WRITE")
+	}
+	tempPath := filepath.Join(tempDir, "wacom-mapping-temp.Export.wacomxs")
 	if err := os.WriteFile(tempPath, modified, 0o644); err != nil {
 		logger.Error("write temp failed", slog.String("path", tempPath), slog.String("error", err.Error()))
 		return errMap("failed to write temp file: "+err.Error(), "ERR_XML_WRITE")
@@ -110,7 +116,12 @@ func ResetMapping(logger *slog.Logger) map[string]interface{} {
 	}
 
 	// Copy baseline to temp path (PrefUtil may lock or mutate the source).
-	tempPath := filepath.Join(os.Getenv("TEMP"), "wacom-reset-temp.Export.wacomxs")
+	// Write to ProgramData so WTabletServicePro (runs as SYSTEM) can read the file.
+	tempDir := filepath.Join(os.Getenv("ProgramData"), "WacomBridge")
+	if err := os.MkdirAll(tempDir, 0o755); err != nil {
+		return errMap("failed to create temp dir: "+err.Error(), "ERR_XML_WRITE")
+	}
+	tempPath := filepath.Join(tempDir, "wacom-reset-temp.Export.wacomxs")
 	if err := os.WriteFile(tempPath, data, 0o644); err != nil {
 		logger.Error("write reset temp failed", slog.String("path", tempPath), slog.String("error", err.Error()))
 		return errMap("failed to write temp file: "+err.Error(), "ERR_XML_WRITE")
