@@ -44,9 +44,13 @@ Injected into the host page via `document.body.appendChild(host)`. The shadow ro
 
 **Banner width:** Auto — fits content. Minimum 220px.
 
+**Focal point:** Primary visual anchor is the `.banner-action` button (accent color `#1976d2`). It is the only interactive element in the banner and the only element using the accent color. User eye-path flows from the state label (left) to the action button (right).
+
 ### Surface 2: Options Page
 
 Standard Chrome extension options page. Declared in `manifest.json` as `options_ui.page = "options.html"`, `open_in_tab: false`. Renders in Chrome's built-in settings panel. Host-page CSS isolation is not a concern here — the options page is a standalone HTML document.
+
+**Focal point:** Primary visual anchor is the "Save targets" button at the bottom of the form (terminal action, accent color `#1976d2`). Secondary anchor is the "Add target" button. All other buttons use the destructive color (`#f44336`) or remain unstyled to keep the hierarchy clear.
 
 ---
 
@@ -65,10 +69,11 @@ Declared values (multiples of 4 only):
 | 3xl | 64px | Not used in this phase |
 
 Exceptions:
-- Banner vertical padding: 6px top/bottom (not a 4-point multiple). Required to achieve exactly 40px banner height with 14px text + 2px border. Declared explicitly.
 - Touch target minimum: 32px height for the banner's action button (single-click target for stylus users).
 
-Source: RESEARCH.md Pattern 4 — `padding: 6px 12px`, `height ~40px`.
+Banner vertical centering: `padding: 0 12px` on `.banner` with `align-items: center` on the flex container. The 40px `height` on `.banner` provides the vertical dimension; flexbox centers content without requiring non-4-point vertical padding.
+
+Source: RESEARCH.md Pattern 4 — `height ~40px`. Vertical padding replaced with flex centering to maintain 4-point spacing compliance.
 
 ---
 
@@ -80,12 +85,12 @@ The banner font stack is declared inside the shadow root's `<style>` block on `:
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Banner text | 13px | 400 (regular) | 1.4 | State messages ("Wacom area synced", "Native host not found") |
-| Banner button label | 13px | 600 (semibold) | 1.4 | "Sync now", "Re-calibrate" |
+| Banner text | 14px | 400 (regular) | 1.4 | State messages ("Wacom area synced", "Native host not found") |
+| Banner button label | 14px | 600 (semibold) | 1.4 | "Sync now", "Re-calibrate" |
 
 Font declaration inside shadow root:
 ```css
-:host { all: initial; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; }
+:host { all: initial; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }
 ```
 
 ### Options Page
@@ -97,7 +102,7 @@ Font declaration inside shadow root:
 
 Font stack: `font-family: system-ui, -apple-system, sans-serif;` — matches Chrome's native settings panel aesthetic.
 
-Declared sizes: 13px (banner), 14px (options body), 16px (options heading).
+Declared sizes: 14px (banner + options body), 16px (options heading).
 Declared weights: 400 (regular), 600 (semibold).
 
 ---
@@ -124,9 +129,9 @@ Source: RESEARCH.md Pattern 4 — established color values used verbatim.
 | Dominant (60%) | `#ffffff` | Banner background (idle state), options page background |
 | Secondary (30%) | `#f5f5f5` | Options page table rows (alternating), input field background |
 | Accent (10%) | `#1976d2` | Action buttons ("Sync now", "Re-calibrate") background and focus ring |
-| Destructive | `#f44336` | "Host not found" banner border, "Remove" button in options page |
+| Destructive | `#f44336` | "Host not found" banner border, "Remove target" button in options page |
 
-Accent reserved for: action button backgrounds in the banner ("Sync now", "Re-calibrate"), options page "Add" button, options page "Save" button. Never used for text color, borders on non-interactive elements, or background fills.
+Accent reserved for: action button backgrounds in the banner ("Sync now", "Re-calibrate"), options page "Add target" button, options page "Save targets" button. Never used for text color, borders on non-interactive elements, or background fills.
 
 ### Banner Box Shadow
 
@@ -140,8 +145,8 @@ Applied to all banner states. Provides elevation separation from the host page w
 
 Options page uses the browser's default form styling. Custom CSS applied only for:
 - Layout: flex column for the tuple list
-- Destructive action: "Remove" button styled with `color: #f44336; border-color: #f44336`
-- Primary action: "Add" / "Save" buttons styled with `background: #1976d2; color: #ffffff`
+- Destructive action: "Remove target" button styled with `color: #f44336; border-color: #f44336`
+- Primary action: "Add target" / "Save targets" buttons styled with `background: #1976d2; color: #ffffff`
 
 ---
 
@@ -184,9 +189,10 @@ No button in the synced state. After 3 000ms the banner host is hidden (`host.st
 ```
     <div class="banner host-not-found">
       <span class="banner-label">Native host not found</span>
+      <span class="banner-hint">Install Wacom Bridge to activate</span>
     </div>
 ```
-No button — user must install the native host. No auto-dismiss.
+No action button — user must install the native host. No auto-dismiss. The hint text (`banner-hint`) is rendered below the label in a smaller weight, pointing the user to the actionable resolution.
 
 **CSS class names (exact — executor must use these):**
 
@@ -197,7 +203,8 @@ No button — user must install the native host. No auto-dismiss.
 | `.banner.synced` | Inner `div` | Success state visual |
 | `.banner.area-changed` | Inner `div` | Warning state visual |
 | `.banner.host-not-found` | Inner `div` | Error state visual |
-| `.banner-label` | `span` | Message text |
+| `.banner-label` | `span` | Primary message text |
+| `.banner-hint` | `span` | Secondary hint text (host-not-found state only) |
 | `.banner-action` | `button` | Action button |
 
 ### Banner Action Button
@@ -209,7 +216,7 @@ No button — user must install the native host. No auto-dismiss.
 | Border radius | 4px |
 | Background | `#1976d2` |
 | Text color | `#ffffff` |
-| Font size | 13px |
+| Font size | 14px |
 | Font weight | 600 |
 | Cursor | pointer |
 | Border | none |
@@ -222,17 +229,17 @@ Hover state: `background: #1565c0` (one shade darker — no JS required, pure CS
 Each row in the tuple list renders two text inputs and a remove button:
 
 ```
-[ Element ID input .............. ] [ URL Pattern input .............. ] [ Remove ]
+[ Element ID input .............. ] [ URL Pattern input .............. ] [ Remove target ]
 ```
 
 Below the list:
 ```
-[ Add another target ]
+[ Add target ]
 ```
 
 At the bottom:
 ```
-[ Save ]
+[ Save targets ]
 ```
 
 **Tuple row layout:** CSS `display: flex; gap: 8px; align-items: center;`
@@ -293,7 +300,7 @@ Source: RESEARCH.md Pattern 5.
 
 ### Options Page Save Behavior
 
-- "Save" button triggers `chrome.storage.sync.set({ targets: [...] })`.
+- "Save targets" button triggers `chrome.storage.sync.set({ targets: [...] })`.
 - On success: display inline text "Saved." for 2 000ms, then remove.
 - On error (storage quota exceeded): display "Save failed — storage quota exceeded."
 - Empty `elementId` or `urlPattern` field blocks save and highlights the offending field in red.
@@ -310,15 +317,16 @@ Source: RESEARCH.md Pattern 5.
 | Synced state label | "Wacom area synced" |
 | Area changed state label | "PDF area changed" |
 | Area changed state CTA | "Re-calibrate" |
-| Host not found state label | "Native host not found" |
+| error_label (host not found) | "Native host not found" |
+| error_hint (host not found) | "Install Wacom Bridge to activate" |
 | Options page section heading | "Target Elements" |
 | Options page field label — Element ID | "Element ID" |
 | Options page field label — URL Pattern | "URL Pattern" |
 | Options page placeholder — Element ID | "e.g. draw-canvas" |
 | Options page placeholder — URL Pattern | "e.g. file:///C:/App/*.html" |
 | Options page add button | "Add target" |
-| Options page save button | "Save" |
-| Options page remove button | "Remove" |
+| Options page save button | "Save targets" |
+| Options page remove button | "Remove target" |
 | Options page save confirmation | "Saved." |
 | Options page save error | "Save failed — storage quota exceeded." |
 | Options page empty tuple list | "No targets configured. Add a target element to get started." |
@@ -328,7 +336,7 @@ Source: RESEARCH.md Pattern 5.
 
 Source: CONTEXT.md D-05 (state labels), CONTEXT.md D-03 (options page), REQUIREMENTS.md EXT-06 (host not found copy).
 
-Note on destructive actions: The "Remove" button in the options page deletes a tuple immediately. No confirmation dialog is required — the data volume is low (typically 1-3 rows), the action is fully reversible by re-adding the tuple, and confirmation dialogs in small utility forms create friction without commensurate safety benefit. Enterprise users operate in a managed environment where IT controls default configuration.
+Note on destructive actions: The "Remove target" button in the options page deletes a tuple immediately. No confirmation dialog is required — the data volume is low (typically 1-3 rows), the action is fully reversible by re-adding the tuple, and confirmation dialogs in small utility forms create friction without commensurate safety benefit. Enterprise users operate in a managed environment where IT controls default configuration.
 
 ---
 
@@ -356,7 +364,7 @@ The executor must inline this verbatim inside the shadow root `<style>` element.
 :host {
   all: initial;
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.4;
 }
 
@@ -364,7 +372,8 @@ The executor must inline this verbatim inside the shadow root `<style>` element.
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  height: 40px;
+  padding: 0 12px;
   background: #ffffff;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -395,6 +404,13 @@ The executor must inline this verbatim inside the shadow root `<style>` element.
   flex: 1;
 }
 
+.banner-hint {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+  flex: 1;
+}
+
 .banner-action {
   height: 32px;
   padding: 0 12px;
@@ -403,7 +419,7 @@ The executor must inline this verbatim inside the shadow root `<style>` element.
   border: none;
   border-radius: 4px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
