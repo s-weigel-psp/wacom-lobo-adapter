@@ -1,4 +1,4 @@
-module github.com/eurefirma/wacom-bridge
+module github.com/brantpoint/wacom-bridge
 
 go 1.25.0
 

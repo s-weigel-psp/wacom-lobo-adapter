@@ -46,7 +46,7 @@
         <File Source="manifest-chrome.json" KeyPath="yes" />
         <RegistryKey
           Root="HKLM"
-          Key="SOFTWARE\Google\Chrome\NativeMessagingHosts\com.eurefirma.wacombridge">
+          Key="SOFTWARE\Google\Chrome\NativeMessagingHosts\com.brantpoint.wacombridge">
           <!-- Default value (unnamed) points to the installed manifest-chrome.json -->
           <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-chrome.json" />
         </RegistryKey>
@@ -58,13 +58,13 @@
         <!-- 64-bit Edge registry path -->
         <RegistryKey
           Root="HKLM"
-          Key="SOFTWARE\Microsoft\Edge\NativeMessagingHosts\com.eurefirma.wacombridge">
+          Key="SOFTWARE\Microsoft\Edge\NativeMessagingHosts\com.brantpoint.wacombridge">
           <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-edge.json" />
         </RegistryKey>
         <!-- 32-bit Edge registry path (WOW6432Node) — covers 32-bit Edge installations -->
         <RegistryKey
           Root="HKLM"
-          Key="SOFTWARE\WOW6432Node\Microsoft\Edge\NativeMessagingHosts\com.eurefirma.wacombridge">
+          Key="SOFTWARE\WOW6432Node\Microsoft\Edge\NativeMessagingHosts\com.brantpoint.wacombridge">
           <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-edge.json" />
         </RegistryKey>
       </Component>

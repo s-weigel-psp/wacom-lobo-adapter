@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/eurefirma/wacom-bridge/internal/logging"
-	"github.com/eurefirma/wacom-bridge/internal/messaging"
-	"github.com/eurefirma/wacom-bridge/internal/state"
-	"github.com/eurefirma/wacom-bridge/internal/wacom"
+	"github.com/brantpoint/wacom-bridge/internal/logging"
+	"github.com/brantpoint/wacom-bridge/internal/messaging"
+	"github.com/brantpoint/wacom-bridge/internal/state"
+	"github.com/brantpoint/wacom-bridge/internal/wacom"
 )
 
 func main() {

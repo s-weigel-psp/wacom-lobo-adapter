@@ -1,7 +1,7 @@
 # Wacom Bridge Native Messaging Protocol
 
 **Version:** 1.0  
-**Host name:** `com.eurefirma.wacombridge`  
+**Host name:** `com.brantpoint.wacombridge`  
 **Scope:** JSON command/response contract between the Chrome/Edge browser extension (Phase 3) and the Go native messaging host (Phase 2).
 
 This document is the authoritative interface contract for Phase 3 parallel development. The Phase 3 developer does not need access to the host source code — this document alone defines every message the extension may send and every response it will receive.
@@ -187,7 +187,7 @@ It is reserved for multi-monitor support (requirement MULTI-01, deferred to v2).
 
 | Event | Host behaviour |
 |-------|---------------|
-| Browser calls `chrome.runtime.connectNative("com.eurefirma.wacombridge")` | Chrome/Edge spawns `wacom-bridge.exe` as a child process |
+| Browser calls `chrome.runtime.connectNative("com.brantpoint.wacombridge")` | Chrome/Edge spawns `wacom-bridge.exe` as a child process |
 | Normal command received | Host processes and responds; continues running |
 | Command error | Host returns `{"error": ..., "code": ...}` and **stays running** (does not exit) |
 | Browser closes the port (tab closed, extension disabled, etc.) | stdin receives EOF → host exits with code 0 |
@@ -203,7 +203,7 @@ The installer registers the following manifest JSON under HKLM for both Chrome a
 
 ```json
 {
-    "name": "com.eurefirma.wacombridge",
+    "name": "com.brantpoint.wacombridge",
     "description": "Wacom Bridge — restricts stylus to PDF annotation region",
     "path": "C:\\Program Files\\WacomBridge\\wacom-bridge.exe",
     "type": "stdio",
@@ -215,8 +215,8 @@ The installer registers the following manifest JSON under HKLM for both Chrome a
 ```
 
 Registry keys (HKLM):
-- Chrome: `SOFTWARE\Google\Chrome\NativeMessagingHosts\com.eurefirma.wacombridge`
-- Edge: `SOFTWARE\Microsoft\Edge\NativeMessagingHosts\com.eurefirma.wacombridge`
+- Chrome: `SOFTWARE\Google\Chrome\NativeMessagingHosts\com.brantpoint.wacombridge`
+- Edge: `SOFTWARE\Microsoft\Edge\NativeMessagingHosts\com.brantpoint.wacombridge`
 
 Both registry key default values point to the absolute path of the manifest JSON file installed by the MSI.
 

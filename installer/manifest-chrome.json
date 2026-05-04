@@ -1,5 +1,5 @@
 {
-    "name": "com.eurefirma.wacombridge",
+    "name": "com.brantpoint.wacombridge",
     "description": "Wacom Bridge - restricts Wacom stylus to PDF region",
     "path": "C:\\Program Files\\WacomBridge\\wacom-bridge.exe",
     "type": "stdio",
