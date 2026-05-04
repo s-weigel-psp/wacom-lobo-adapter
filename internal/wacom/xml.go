@@ -80,6 +80,11 @@ func SetMapping(logger *slog.Logger, x, y, w, h int) map[string]interface{} {
 		logger.Error("write temp failed", slog.String("path", tempPath), slog.String("error", err.Error()))
 		return errMap("failed to write temp file: "+err.Error(), "ERR_XML_WRITE")
 	}
+	// Grant SYSTEM read access — WTabletServicePro runs as SYSTEM and reads the file via COM.
+	// Go's os.WriteFile sets per-user ACL only; icacls extends it without replacing existing entries.
+	if out, err := exec.Command("icacls", tempPath, "/grant", "SYSTEM:(R)").CombinedOutput(); err != nil {
+		logger.Warn("icacls failed", slog.String("output", string(out)), slog.String("error", err.Error()))
+	}
 
 	logger.Info("set_mapping XML written",
 		slog.Int("x", x), slog.Int("y", y),
@@ -125,6 +130,9 @@ func ResetMapping(logger *slog.Logger) map[string]interface{} {
 	if err := os.WriteFile(tempPath, data, 0o644); err != nil {
 		logger.Error("write reset temp failed", slog.String("path", tempPath), slog.String("error", err.Error()))
 		return errMap("failed to write temp file: "+err.Error(), "ERR_XML_WRITE")
+	}
+	if out, err := exec.Command("icacls", tempPath, "/grant", "SYSTEM:(R)").CombinedOutput(); err != nil {
+		logger.Warn("icacls failed", slog.String("output", string(out)), slog.String("error", err.Error()))
 	}
 
 	if err := runPrefUtil(tempPath); err != nil {
