@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WacomBridge MSI Installer
+  WiX 4 Package definition
+
+  Build (Windows, requires .NET SDK 6+ and WiX 4 CLI):
+    dotnet tool install -g wix   (first time only)
+    wix build installer/wacom-bridge.wxs -o wacom-bridge.msi
+
+  Silent install:
+    msiexec /i wacom-bridge.msi /quiet
+
+  Silent uninstall:
+    msiexec /x wacom-bridge.msi /quiet
+
+  Before production build:
+    - Replace PLACEHOLDER_*_EXTENSION_ID in manifest-chrome.json and manifest-edge.json
+      with the published extension IDs from Chrome Web Store / Edge Add-ons.
+    - Place the compiled wacom-bridge.exe in the installer/ directory (or adjust Source paths).
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="WacomBridge"
+    Manufacturer="Eurefirma"
+    Version="1.0.0"
+    UpgradeCode="{9FDB4A10-3C27-494E-9C56-E1166FB9BD39}"
+  >
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of WacomBridge is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Install to C:\Program Files\WacomBridge\ (64-bit hive on 64-bit Windows) -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="WacomBridge" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="WacomBridgeComponents" Directory="INSTALLFOLDER">
+
+      <!-- Main binary: wacom-bridge.exe -->
+      <Component Id="MainExe" Guid="{C0C09137-FED8-4F35-9BE9-93616EDC1208}">
+        <File Source="wacom-bridge.exe" KeyPath="yes" />
+      </Component>
+
+      <!-- Chrome Native Messaging manifest + HKLM registry entry -->
+      <Component Id="ManifestChrome" Guid="{351D0D8E-4145-4F15-8EC9-F80089F5E5DF}">
+        <File Source="manifest-chrome.json" KeyPath="yes" />
+        <RegistryKey
+          Root="HKLM"
+          Key="SOFTWARE\Google\Chrome\NativeMessagingHosts\com.eurefirma.wacombridge">
+          <!-- Default value (unnamed) points to the installed manifest-chrome.json -->
+          <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-chrome.json" />
+        </RegistryKey>
+      </Component>
+
+      <!-- Edge Native Messaging manifest + HKLM registry entries (64-bit and WOW6432Node) -->
+      <Component Id="ManifestEdge" Guid="{A4DFDEF9-3F69-476A-82F5-88A042C3849D}">
+        <File Source="manifest-edge.json" KeyPath="yes" />
+        <!-- 64-bit Edge registry path -->
+        <RegistryKey
+          Root="HKLM"
+          Key="SOFTWARE\Microsoft\Edge\NativeMessagingHosts\com.eurefirma.wacombridge">
+          <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-edge.json" />
+        </RegistryKey>
+        <!-- 32-bit Edge registry path (WOW6432Node) — covers 32-bit Edge installations -->
+        <RegistryKey
+          Root="HKLM"
+          Key="SOFTWARE\WOW6432Node\Microsoft\Edge\NativeMessagingHosts\com.eurefirma.wacombridge">
+          <RegistryValue Type="string" Value="[INSTALLFOLDER]manifest-edge.json" />
+        </RegistryKey>
+      </Component>
+
+    </ComponentGroup>
+
+    <Feature Id="App">
+      <ComponentGroupRef Id="WacomBridgeComponents" />
+    </Feature>
+
+  </Package>
+</Wix>
