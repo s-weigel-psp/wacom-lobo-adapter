@@ -185,8 +185,6 @@ func applyScreenAreaCoords(data []byte, x, y, w, h int) ([]byte, int, error) {
 	dec.Strict = false
 
 	var out bytes.Buffer
-	out.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
-
 	enc := xml.NewEncoder(&out)
 	enc.Indent("", "  ")
 
