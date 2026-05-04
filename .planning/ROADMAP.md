@@ -61,9 +61,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Scaffold Manifest V3 extension — `manifest.json` with `nativeMessaging` permission and URL allowlist, background service worker with `chrome.runtime.connectNative`, message routing between content script and service worker
-- [ ] 03-02: Implement content script — `document.getElementById(TARGET_ID)` polling, `getBoundingClientRect()` + `window.screenX/Y` coordinate calculation, DPR correction via `window.devicePixelRatio`, fallback for `window.getScreenDetails()` unavailability
-- [ ] 03-03: Implement banner UI (Shadow DOM) — initial "synced" state, staleness detection via `ResizeObserver` + `resize` event + `screenX/Y` polling, re-calibrate button handler, error state for missing native host
+- [ ] 03-01-PLAN.md — Scaffold MV3 extension: manifest.json (nativeMessaging + storage permissions, file:///C:/WacomTest/*.html match), background.js service worker (NATIVE_COMMAND relay, sendNativeMessage to com.brantpoint.wacombridge, return true), config.js (DEFAULT_TARGETS, HOST_NAME, POLL_INTERVAL_MS, DEBOUNCE_MS, AUTO_DISMISS_MS), content.js stub with ES module imports and sendNativeCommand relay
+- [ ] 03-02-PLAN.md — Implement content.js coordinate calculation and staleness detection: getPhysicalCoords() with DPR formula (Math.round((rect + screenX/Y) * devicePixelRatio)), three-trigger staleness detection (ResizeObserver + window resize + 1s screenX/Y poll), Page Visibility pause/resume, syncMapping() sending set_mapping command with ERR_ error handling
+- [ ] 03-03-PLAN.md — Shadow DOM banner UI and options page: banner.js with createBanner() factory (closed mode, four states per UI-SPEC.md, auto-dismiss synced after 3000ms, 300ms debounce), options.html/js/css with chrome.storage.sync tuple CRUD, validation for empty fields and invalid URL patterns
 
 ### Phase 4: Domain Deployment
 **Goal**: The full system (extension + native host) is deployed to all domain machines without per-user action, validated with a pilot group before broad rollout.
