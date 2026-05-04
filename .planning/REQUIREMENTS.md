@@ -18,10 +18,14 @@
 
 ### Native Host (Phase 2)
 
-- [ ] **HOST-01**: Native messaging host processes `set_mapping` command and applies Wacom screen region mapping
-- [ ] **HOST-02**: Native messaging host processes `reset_mapping` command and restores baseline profile
-- [ ] **HOST-03**: Native messaging host responds to `get_status` and `ping` commands
-- [ ] **HOST-04**: Host logs activity to `%LOCALAPPDATA%\WacomBridge\logs\`
+- [x] **HOST-01
+**: Native messaging host processes `set_mapping` command and applies Wacom screen region mapping
+- [x] **HOST-02
+**: Native messaging host processes `reset_mapping` command and restores baseline profile
+- [x] **HOST-03
+**: Native messaging host responds to `get_status` and `ping` commands
+- [x] **HOST-04
+**: Host logs activity to `%LOCALAPPDATA%\WacomBridge\logs\`
 - [ ] **HOST-05**: WiX MSI installer registers Chrome and Edge native messaging manifests in the Windows registry
 - [ ] **HOST-06**: Installer runs silently without user interaction
 
