@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Wacom Bridge",
+  "version": "1.0.0",
+  "description": "Restricts Wacom stylus to PDF annotation region",
+  "permissions": ["nativeMessaging", "storage"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["file:///C:/WacomTest/*.html"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}
